@@ -66,7 +66,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, cart, setCart }) => {
             </button>
 
             {openShirt && (
-              <ul className="absolute bg-base-100 shadow-lg p-3 rounded-lg w-40">
+              <ul className="absolute bg-base-100 shadow-lg p-5 rounded-lg w-35 mt-11 mr-4">
                 <li><Link to="/roadstar">Roadster</Link></li>
                 <li><Link to="/highlander">Highlander</Link></li>
                 <li><Link to="/peterengland">Peter England</Link></li>
@@ -88,7 +88,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, cart, setCart }) => {
             </button>
 
             {openPant && (
-              <ul className="absolute bg-base-100 shadow-lg p-3 rounded-lg w-40">
+              <ul className="absolute bg-base-100 shadow-lg p-3 rounded-lg w-40 mt-11">
                 <li><Link to="/spykar">Spykar</Link></li>
                 <li><Link to="/lee">Lee</Link></li>
                 <li><Link to="/polo">U.S. Polo</Link></li>
