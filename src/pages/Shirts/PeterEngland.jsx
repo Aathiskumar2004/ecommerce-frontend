@@ -39,7 +39,7 @@ const PeterEngland = () => {
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-3">
       {peterProduct.map((item) => (
         <Link key={item._id} to={`/product/${item._id}`}>
-                 <div className="card bg-base-100 shadow-sm cursor-pointer">
+                 <div className="card bg-base-99 shadow-sm cursor-pointer">
                    <figure>
                      <img
                        src={item.image}
