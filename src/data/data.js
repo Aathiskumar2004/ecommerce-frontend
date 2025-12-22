@@ -1,11 +1,11 @@
 const products = [
-  // {
-  //   id: 1,
-  //   name: "Men's Casual Shirt",
-  //   brand: "Roadster",
-  //   price: 799,
-  //   image: "/src/assets/blue.webp",
-  // },
+  {
+    id: 1,
+    name: "Men's Casual Shirt",
+    brand: "Roadster",
+    price: 799,
+    image: "https://i.pinimg.com/1200x/26/59/51/265951d90f4389e1de29eb9a36ec684b.jpg",
+  },
   {
     id: 2,
     name: "Men's Checkered Shirt",

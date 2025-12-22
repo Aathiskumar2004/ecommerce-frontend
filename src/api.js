@@ -1,17 +1,13 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://ecommerce-backend-loyl.onrender.com",
+  baseURL: "https://ecommerce-backend-fqqg.onrender.com",
+  withCredentials: true
 });
 
-// Token auto attach
-api.interceptors.request.use((req) => {
+api.interceptors.request.use(req => {
   const token = localStorage.getItem("token");
-
-  if (token) {
-    req.headers.Authorization = `Bearer ${token}`;
-  }
-
+  if (token) req.headers.Authorization = `Bearer ${token}`;
   return req;
 });
 

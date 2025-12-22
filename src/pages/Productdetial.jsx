@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useOutletContext, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../api";
 import BestDeals from "../componunts/BestDeal";
 
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { cart, setCart } = useOutletContext();
 
   const [qty, setQty] = useState(1);
   const [size, setSize] = useState("");
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 👉 Fetch product from backend (same UI retains)
+  // 👉 Fetch single product from backend
   const fetchProduct = async () => {
     try {
-      const res = await api.get("/api/products"); // backend fetch
+      const res = await api.get("/api/products");
       const found = res.data.find((item) => item._id === id);
 
       setProduct(found);
@@ -32,42 +31,56 @@ const ProductDetails = () => {
   }, [id]);
 
   if (loading) return <h2 className="text-center p-5">Loading...</h2>;
-  if (!product)
-    return <h2 className="text-center p-5">Product Not Found</h2>;
+  if (!product) return <h2 className="text-center p-5">Product Not Found</h2>;
 
-  // ✔ Add to cart
-  const handleAddToCart = () => {
-    if (!size) {
-      alert("⚠️ Please select a size first");
-      return;
-    }
+  // ✅ Add to Cart (backend)
+ const handleAddToCart = async () => {
+  if (!size) {
+    alert("⚠️ Please select a size first");
+    return;
+  }
 
-    const existing = cart.find(
-      (item) => item._id === product._id && item.size === size
-    );
+  try {
+    const res = await api.post("/api/cart/add", {
+      productId: product._id,
+      size,
+      quantity: qty
+    });
 
-    if (existing) {
-      setCart(
-        cart.map((item) =>
-          item._id === product._id && item.size === size
-            ? { ...item, quantity: item.quantity + qty }
-            : item
-        )
-      );
+    alert("Added to cart!");
+  } catch (error) {
+    console.log(error);
+
+    if (error.response?.status === 403) {
+      alert("Please login first");
+      navigate("/login");
     } else {
-      setCart([...cart, { ...product, size, quantity: qty }]);
+      alert("Failed to add to cart");
     }
-  };
+  }
+};
 
-  // ✔ Buy Now
-  const handleBuyNow = () => {
+  // 🛒 Buy Now
+  const handleBuyNow = async () => {
     if (!size) {
       alert("⚠️ Please select a size before buying");
       return;
     }
 
-    setCart([{ ...product, size, quantity: qty }]);
-    navigate("/checkout");
+    try {
+      await api.post(
+        "/api/cart/add",
+        {
+          productId: product._id,
+          quantity: qty,
+        },
+        { withCredentials: true }
+      );
+
+      navigate("/checkout");
+    } catch (error) {
+      console.log("Buy now error:", error);
+    }
   };
 
   return (
@@ -94,7 +107,7 @@ const ProductDetails = () => {
             This is a premium quality product. Stylish and comfortable for daily use.
           </p>
 
-          {/* Size Selection */}
+          {/* SIZE SELECTION */}
           <div className="mb-6">
             <h3 className="font-semibold mb-2">Select Size</h3>
             <div className="flex gap-3">
@@ -112,7 +125,7 @@ const ProductDetails = () => {
             </div>
           </div>
 
-          {/* Quantity */}
+          {/* QUANTITY */}
           <div className="flex items-center gap-4 mb-6">
             <button
               className="btn btn-sm"
@@ -128,7 +141,7 @@ const ProductDetails = () => {
             </button>
           </div>
 
-          {/* Buttons */}
+          {/* BUTTONS */}
           <div className="flex gap-4">
             <button className="btn btn-primary" onClick={handleAddToCart}>
               Add to Cart
