@@ -7,14 +7,16 @@ const Cart = () => {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔥 Fetch user's cart from backend
+  // 🔥 Fetch user's cart
   const fetchCart = async () => {
     try {
-      const res = await api.get("/api/cart");
-      setCart(res.data.cart);
-      setLoading(false);
+      const res = await api.get("/api/cart/my-cart", {
+        withCredentials: true,
+      });
+      setCart(res.data); // ✅ backend sends array directly
     } catch (error) {
       console.log("Cart load error:", error);
+    } finally {
       setLoading(false);
     }
   };
@@ -35,31 +37,14 @@ const Cart = () => {
       </div>
     );
 
-  // 🔥 Update quantity
-  const updateQty = async (itemId, newQty) => {
-    if (newQty < 1) return;
-
+  // 🔥 Remove item (backend supported route)
+  const removeItem = async (productId, size) => {
     try {
-      await api.put(`/api/cart/update/${itemId}`, {
-        quantity: newQty,
-      });
-
-      setCart(
-        cart.map((item) =>
-          item._id === itemId ? { ...item, quantity: newQty } : item
-        )
+      const res = await api.delete(
+        `/api/cart/remove/${productId}/${size}`,
+        { withCredentials: true }
       );
-    } catch (error) {
-      console.log("Quantity update error:", error);
-    }
-  };
-
-  // 🔥 Remove item
-  const removeItem = async (itemId) => {
-    try {
-      await api.delete(`/api/cart/delete/${itemId}`);
-
-      setCart(cart.filter((item) => item._id !== itemId));
+      setCart(res.data.cart);
     } catch (error) {
       console.log("Delete error:", error);
     }
@@ -67,7 +52,7 @@ const Cart = () => {
 
   // 🔥 Total Price
   const total = cart.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) => sum + item.productId.price * item.quantity,
     0
   );
 
@@ -82,40 +67,33 @@ const Cart = () => {
             className="card card-side bg-base-100 shadow-md p-4 flex items-center gap-6"
           >
             <img
-              src={item.product.image}
+              src={item.productId.image}
               className="w-32 h-32 object-cover rounded-lg"
-              alt={item.product.name}
+              alt={item.productId.name}
             />
 
             <div className="flex-1">
-              <h2 className="text-xl font-semibold">{item.product.name}</h2>
-              <p className="text-gray-500">{item.product.brand}</p>
+              <h2 className="text-xl font-semibold">
+                {item.productId.name}
+              </h2>
+              <p className="text-gray-500">{item.productId.brand}</p>
               <p className="font-semibold text-indigo-600">
-                ₹{item.product.price}
+                ₹{item.productId.price}
               </p>
 
-              <div className="flex items-center gap-4 mt-3">
-                <button
-                  className="btn btn-sm"
-                  onClick={() => updateQty(item._id, item.quantity - 1)}
-                >
-                  -
-                </button>
-
-                <span className="font-bold">{item.quantity}</span>
-
-                <button
-                  className="btn btn-sm"
-                  onClick={() => updateQty(item._id, item.quantity + 1)}
-                >
-                  +
-                </button>
-              </div>
+              <p className="mt-2">
+                Size: <b>{item.size}</b>
+              </p>
+              <p>
+                Quantity: <b>{item.quantity}</b>
+              </p>
             </div>
 
             <button
               className="btn btn-error btn-sm"
-              onClick={() => removeItem(item._id)}
+              onClick={() =>
+                removeItem(item.productId._id, item.size)
+              }
             >
               Remove
             </button>
