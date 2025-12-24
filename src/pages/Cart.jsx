@@ -7,13 +7,13 @@ const Cart = () => {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔥 Fetch user's cart
+  // 🔥 Fetch cart (CORRECT ROUTE)
   const fetchCart = async () => {
     try {
       const res = await api.get("/api/cart/my-cart", {
         withCredentials: true,
       });
-      setCart(res.data); // ✅ backend sends array directly
+      setCart(res.data); // backend returns ARRAY
     } catch (error) {
       console.log("Cart load error:", error);
     } finally {
@@ -25,9 +25,11 @@ const Cart = () => {
     fetchCart();
   }, []);
 
-  if (loading) return <h2 className="text-center p-5">Loading Cart...</h2>;
+  if (loading) {
+    return <h2 className="text-center p-5">Loading Cart...</h2>;
+  }
 
-  if (cart.length === 0)
+  if (cart.length === 0) {
     return (
       <div className="text-center p-10">
         <h2 className="text-2xl font-semibold mb-4">Your Cart is Empty 🛒</h2>
@@ -36,8 +38,9 @@ const Cart = () => {
         </Link>
       </div>
     );
+  }
 
-  // 🔥 Remove item (backend supported route)
+  // 🔥 Remove item (ONLY route backend has)
   const removeItem = async (productId, size) => {
     try {
       const res = await api.delete(
@@ -46,11 +49,11 @@ const Cart = () => {
       );
       setCart(res.data.cart);
     } catch (error) {
-      console.log("Delete error:", error);
+      console.log("Remove error:", error);
     }
   };
 
-  // 🔥 Total Price
+  // 🔥 Total price
   const total = cart.reduce(
     (sum, item) => sum + item.productId.price * item.quantity,
     0
@@ -64,16 +67,16 @@ const Cart = () => {
         {cart.map((item) => (
           <div
             key={item._id}
-            className="card card-side bg-base-100 shadow-md p-4 flex items-center gap-6"
+            className="flex gap-6 items-center bg-white shadow-md rounded-lg p-4"
           >
             <img
               src={item.productId.image}
-              className="w-32 h-32 object-cover rounded-lg"
               alt={item.productId.name}
+              className="w-28 h-28 object-cover rounded-md"
             />
 
             <div className="flex-1">
-              <h2 className="text-xl font-semibold">
+              <h2 className="text-lg font-semibold">
                 {item.productId.name}
               </h2>
               <p className="text-gray-500">{item.productId.brand}</p>
@@ -81,7 +84,7 @@ const Cart = () => {
                 ₹{item.productId.price}
               </p>
 
-              <p className="mt-2">
+              <p className="mt-1">
                 Size: <b>{item.size}</b>
               </p>
               <p>
@@ -101,9 +104,11 @@ const Cart = () => {
         ))}
       </div>
 
-      {/* TOTAL SECTION */}
+      {/* TOTAL */}
       <div className="mt-10 text-right">
-        <h2 className="text-2xl font-bold mb-3">Total: ₹{total}</h2>
+        <h2 className="text-2xl font-bold mb-3">
+          Total: ₹{total}
+        </h2>
         <button
           className="btn btn-primary"
           onClick={() => navigate("/checkout")}
