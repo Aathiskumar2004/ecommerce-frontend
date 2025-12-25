@@ -13,7 +13,9 @@ const Cart = () => {
       const res = await api.get("/api/cart/my-cart", {
         withCredentials: true,
       });
-      setCart(res.data); // backend returns ARRAY
+      // Safely handle different response structures
+      const cartData = Array.isArray(res.data) ? res.data : (res.data.cart || []);
+      setCart(cartData);
     } catch (error) {
       console.log("Cart load error:", error);
     } finally {
@@ -47,7 +49,9 @@ const Cart = () => {
         `/api/cart/remove/${productId}/${size}`,
         { withCredentials: true }
       );
-      setCart(res.data.cart);
+      // Safely handle different response structures
+      const updatedCart = Array.isArray(res.data) ? res.data : (res.data.cart || []);
+      setCart(updatedCart);
     } catch (error) {
       console.log("Remove error:", error);
     }
@@ -65,42 +69,44 @@ const Cart = () => {
 
       <div className="space-y-6">
         {cart.map((item) => (
-          <div
-            key={item._id}
-            className="flex gap-6 items-center bg-white shadow-md rounded-lg p-4"
-          >
-            <img
-              src={item.productId.image}
-              alt={item.productId.name}
-              className="w-28 h-28 object-cover rounded-md"
-            />
-
-            <div className="flex-1">
-              <h2 className="text-lg font-semibold">
-                {item.productId.name}
-              </h2>
-              <p className="text-gray-500">{item.productId.brand}</p>
-              <p className="font-semibold text-indigo-600">
-                ₹{item.productId.price}
-              </p>
-
-              <p className="mt-1">
-                Size: <b>{item.size}</b>
-              </p>
-              <p>
-                Quantity: <b>{item.quantity}</b>
-              </p>
-            </div>
-
-            <button
-              className="btn btn-error btn-sm"
-              onClick={() =>
-                removeItem(item.productId._id, item.size)
-              }
+          item.productId ? (
+            <div
+              key={item._id}
+              className="flex gap-6 items-center bg-white shadow-md rounded-lg p-4"
             >
-              Remove
-            </button>
-          </div>
+              <img
+                src={item.productId.image}
+                alt={item.productId.name}
+                className="w-28 h-28 object-cover rounded-md"
+              />
+
+              <div className="flex-1">
+                <h2 className="text-lg font-semibold">
+                  {item.productId.name}
+                </h2>
+                <p className="text-gray-500">{item.productId.brand}</p>
+                <p className="font-semibold text-indigo-600">
+                  ₹{item.productId.price}
+                </p>
+
+                <p className="mt-1">
+                  Size: <b>{item.size}</b>
+                </p>
+                <p>
+                  Quantity: <b>{item.quantity}</b>
+                </p>
+              </div>
+
+              <button
+                className="btn btn-error btn-sm"
+                onClick={() =>
+                  removeItem(item.productId._id, item.size)
+                }
+              >
+                Remove
+              </button>
+            </div>
+          ) : null
         ))}
       </div>
 
