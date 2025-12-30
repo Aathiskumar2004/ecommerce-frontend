@@ -7,7 +7,12 @@ const ProductCard = ({ product }) => {
     <Link to={`/product/${product.id || product._id}`} className="block h-full">
       <div className="product-card">
         <div className="card-image-container">
-          <img src={product.image} alt={product.name} className="product-image" />
+          <img 
+            src={product.image} 
+            alt={product.name} 
+            className="product-image" 
+            onError={(e) => { e.target.src = "https://via.placeholder.com/300?text=No+Image"; }}
+          />
           {/* Optional: Add badge if product has discount or is new */}
           <span className="badge-overlay">HOT</span>
         </div>

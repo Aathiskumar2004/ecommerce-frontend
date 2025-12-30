@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -8,7 +8,7 @@ const Products = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/products");
+        const response = await api.get("/products");
         setProducts(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -30,7 +30,12 @@ const Products = () => {
           <div className="card bg-base-100 w-72 shadow-sm hover:shadow-xl transition">
             
             <figure>
-              <img src={item.image} alt={item.name} className="h-48 w-full object-cover" />
+              <img 
+                src={item.image} 
+                alt={item.name} 
+                className="h-48 w-full object-cover"
+                onError={(e) => { e.target.src = "https://via.placeholder.com/300?text=No+Image"; }}
+              />
             </figure>
 
             <div className="card-body">
