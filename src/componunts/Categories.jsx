@@ -1,8 +1,23 @@
-import React from "react";
-import products from "../data/data";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Products = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/products");
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   return (
     <div className="px-6 py-10">
       <h2 className="text-3xl font-bold text-center mb-8">Featured Products</h2>
@@ -10,9 +25,9 @@ const Products = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
 
         {products.slice(0, 8).map((item) => (
-                <Link key={item.id} to={`/product/${item.id}`}>
+                <Link key={item.id || item._id} to={`/product/${item.id || item._id}`}>
 
-          <div key={item.id} className="card bg-base-100 w-72 shadow-sm hover:shadow-xl transition">
+          <div className="card bg-base-100 w-72 shadow-sm hover:shadow-xl transition">
             
             <figure>
               <img src={item.image} alt={item.name} className="h-48 w-full object-cover" />
